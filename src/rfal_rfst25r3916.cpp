@@ -140,7 +140,7 @@ ReturnCode RfalRfST25R3916Class::rfalInitialize(void)
    * Registers set by rfalSetAnalogConfig will tell rfalCalibrate what to perform*/
   rfalCalibrate();
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -151,7 +151,7 @@ ReturnCode RfalRfST25R3916Class::rfalCalibrate(void)
 
   /* Check if RFAL is not initialized */
   if (gRFAL.state == RFAL_STATE_IDLE) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /*******************************************************************************/
@@ -164,7 +164,7 @@ ReturnCode RfalRfST25R3916Class::rfalCalibrate(void)
     st25r3916AdjustRegulators(&resValue);
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -210,7 +210,7 @@ ReturnCode RfalRfST25R3916Class::rfalDeinitialize(void)
   detachInterrupt(int_pin);
   irq_handler = NULL;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -248,12 +248,12 @@ ReturnCode RfalRfST25R3916Class::rfalSetMode(rfalMode mode, rfalBitRate txBR, rf
 {
   /* Check if RFAL is not initialized */
   if (gRFAL.state == RFAL_STATE_IDLE) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* Check allowed bit rate value */
   if ((txBR == RFAL_BR_KEEP) || (rxBR == RFAL_BR_KEEP)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   switch (mode) {
@@ -448,11 +448,11 @@ ReturnCode RfalRfST25R3916Class::rfalSetMode(rfalMode mode, rfalBitRate txBR, rf
 
     /*******************************************************************************/
     case RFAL_MODE_LISTEN_NFCB:
-      return ERR_NOTSUPP;
+      return ST_ERR_NOTSUPP;
 
     /*******************************************************************************/
     default:
-      return ERR_NOT_IMPLEMENTED;
+      return ST_ERR_NOT_IMPLEMENTED;
   }
 
   /* Set state as STATE_MODE_SET only if not initialized yet (PSL) */
@@ -478,7 +478,7 @@ ReturnCode RfalRfST25R3916Class::rfalSetBitRate(rfalBitRate txBR, rfalBitRate rx
 
   /* Check if RFAL is not initialized */
   if (gRFAL.state == RFAL_STATE_IDLE) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* Store the new Bit Rates */
@@ -525,7 +525,7 @@ ReturnCode RfalRfST25R3916Class::rfalSetBitRate(rfalBitRate txBR, rfalBitRate rx
     case RFAL_MODE_POLL_PICOPASS:
       if (((gRFAL.rxBR != RFAL_BR_26p48) && (gRFAL.rxBR != RFAL_BR_52p97) && (gRFAL.rxBR != RFAL_BR_106) && (gRFAL.rxBR != RFAL_BR_212))
           || ((gRFAL.txBR != RFAL_BR_1p66) && (gRFAL.txBR != RFAL_BR_26p48))) {
-        return ERR_PARAM;
+        return ST_ERR_PARAM;
       }
 
       {
@@ -600,14 +600,14 @@ ReturnCode RfalRfST25R3916Class::rfalSetBitRate(rfalBitRate txBR, rfalBitRate rx
     /*******************************************************************************/
     case RFAL_MODE_LISTEN_NFCB:
     case RFAL_MODE_NONE:
-      return ERR_WRONG_STATE;
+      return ST_ERR_WRONG_STATE;
 
     /*******************************************************************************/
     default:
-      return ERR_NOT_IMPLEMENTED;
+      return ST_ERR_NOT_IMPLEMENTED;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -615,7 +615,7 @@ ReturnCode RfalRfST25R3916Class::rfalSetBitRate(rfalBitRate txBR, rfalBitRate rx
 ReturnCode RfalRfST25R3916Class::rfalGetBitRate(rfalBitRate *txBR, rfalBitRate *rxBR)
 {
   if ((gRFAL.state == RFAL_STATE_IDLE) || (gRFAL.mode == RFAL_MODE_NONE)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   if (txBR != NULL) {
@@ -626,7 +626,7 @@ ReturnCode RfalRfST25R3916Class::rfalGetBitRate(rfalBitRate *txBR, rfalBitRate *
     *rxBR = gRFAL.rxBR;
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -717,10 +717,10 @@ ReturnCode RfalRfST25R3916Class::rfalFieldOnAndStartGT(void)
   /* Check if RFAL has been initialized (Oscillator should be running) and also
    * if a direct register access has been performed and left the Oscillator Off */
   if (!st25r3916IsOscOn() || (gRFAL.state < RFAL_STATE_INIT)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
-  ret = ERR_NONE;
+  ret = ST_ERR_NONE;
 
   /* Set Analog configurations for Field On event */
   rfalSetAnalogConfig((RFAL_ANALOG_CONFIG_TECH_CHIP | RFAL_ANALOG_CONFIG_CHIP_FIELD_ON));
@@ -734,7 +734,7 @@ ReturnCode RfalRfST25R3916Class::rfalFieldOnAndStartGT(void)
     /* Use Thresholds set by AnalogConfig */
     ret = st25r3916PerformCollisionAvoidance(ST25R3916_CMD_INITIAL_RF_COLLISION, ST25R3916_THRESHOLD_DO_NOT_SET, ST25R3916_THRESHOLD_DO_NOT_SET, 0);
 
-    gRFAL.field = st25r3916IsTxEnabled(); //(ret == ERR_NONE);
+    gRFAL.field = st25r3916IsTxEnabled(); //(ret == ST_ERR_NONE);
 
     /* Only turn on Receiver and Transmitter if field was successfully turned On */
     if (gRFAL.field) {
@@ -768,7 +768,7 @@ ReturnCode RfalRfST25R3916Class::rfalFieldOff(void)
   rfalSetAnalogConfig((RFAL_ANALOG_CONFIG_TECH_CHIP | RFAL_ANALOG_CONFIG_CHIP_FIELD_OFF));
   gRFAL.field = false;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -779,7 +779,7 @@ ReturnCode RfalRfST25R3916Class::rfalStartTransceive(const rfalTransceiveContext
 
   /* Check for valid parameters */
   if (ctx == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Ensure that RFAL is already Initialized and the mode has been set */
@@ -787,7 +787,7 @@ ReturnCode RfalRfST25R3916Class::rfalStartTransceive(const rfalTransceiveContext
     /*******************************************************************************/
     /* Check whether the field is already On, otherwise no TXE will be received  */
     if (!st25r3916IsTxEnabled() && (!rfalIsModePassiveListen(gRFAL.mode) && (ctx->txBuf != NULL))) {
-      return ERR_WRONG_STATE;
+      return ST_ERR_WRONG_STATE;
     }
 
     gRFAL.TxRx.ctx = *ctx;
@@ -830,7 +830,7 @@ ReturnCode RfalRfST25R3916Class::rfalStartTransceive(const rfalTransceiveContext
     if ((gRFAL.TxRx.ctx.fwt != RFAL_FWT_NONE) && (gRFAL.TxRx.ctx.fwt != 0U)) {
       /* Ensure proper timing configuration */
       if (gRFAL.timings.FDTListen >= gRFAL.TxRx.ctx.fwt) {
-        return ERR_PARAM;
+        return ST_ERR_PARAM;
       }
 
       FxTAdj = RFAL_FWT_ADJUSTMENT;
@@ -859,7 +859,7 @@ ReturnCode RfalRfST25R3916Class::rfalStartTransceive(const rfalTransceiveContext
 
     gRFAL.state       = RFAL_STATE_TXRX;
     gRFAL.TxRx.state  = RFAL_TXRX_STATE_TX_IDLE;
-    gRFAL.TxRx.status = ERR_BUSY;
+    gRFAL.TxRx.status = ST_ERR_BUSY;
 
     /*******************************************************************************/
     if ((RFAL_MODE_POLL_NFCV == gRFAL.mode) || (RFAL_MODE_POLL_PICOPASS == gRFAL.mode)) {
@@ -878,7 +878,7 @@ ReturnCode RfalRfST25R3916Class::rfalStartTransceive(const rfalTransceiveContext
       /* In NFCV a TxRx with a valid txBuf and txBufSize==0 indicates to send an EOF */
       /* Skip logic below that would go directly into receive                        */
       if (gRFAL.TxRx.ctx.txBuf != NULL) {
-        return  ERR_NONE;
+        return  ST_ERR_NONE;
       }
     }
 
@@ -912,10 +912,10 @@ ReturnCode RfalRfST25R3916Class::rfalStartTransceive(const rfalTransceiveContext
       gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_IDLE;
     }
 
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
-  return ERR_WRONG_STATE;
+  return ST_ERR_WRONG_STATE;
 }
 
 
@@ -954,10 +954,10 @@ ReturnCode RfalRfST25R3916Class::rfalTransceiveRunBlockingTx(void)
   do {
     rfalWorker();
     ret = rfalGetTransceiveStatus();
-  } while (rfalIsTransceiveInTx() && (ret == ERR_BUSY));
+  } while (rfalIsTransceiveInTx() && (ret == ST_ERR_BUSY));
 
   if (rfalIsTransceiveInRx()) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   return ret;
@@ -972,7 +972,7 @@ ReturnCode RfalRfST25R3916Class::rfalTransceiveBlockingRx(void)
   do {
     rfalWorker();
     ret = rfalGetTransceiveStatus();
-  } while (rfalIsTransceiveInRx() || (ret == ERR_BUSY));
+  } while (rfalIsTransceiveInRx() || (ret == ST_ERR_BUSY));
 
   return ret;
 }
@@ -1006,7 +1006,7 @@ ReturnCode RfalRfST25R3916Class::rfalRunTransceiveWorker(void)
         if( rfalTimerisExpired( gRFAL.tmr.txRx ) )
         {
             /* If sanity timer has expired abort ongoing transceive and signal error */ 
-            gRFAL.TxRx.status = ERR_IO;
+            gRFAL.TxRx.status = ST_ERR_IO;
             gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
         }
     }
@@ -1022,7 +1022,7 @@ ReturnCode RfalRfST25R3916Class::rfalRunTransceiveWorker(void)
       return rfalGetTransceiveStatus();
     }
   }
-  return ERR_WRONG_STATE;
+  return ST_ERR_WRONG_STATE;
 }
 
 /*******************************************************************************/
@@ -1033,7 +1033,7 @@ rfalTransceiveState RfalRfST25R3916Class::rfalGetTransceiveState(void)
 
 ReturnCode RfalRfST25R3916Class::rfalGetTransceiveStatus(void)
 {
-  return ((gRFAL.TxRx.state == RFAL_TXRX_STATE_IDLE) ? gRFAL.TxRx.status : ERR_BUSY);
+  return ((gRFAL.TxRx.state == RFAL_TXRX_STATE_IDLE) ? gRFAL.TxRx.status : ST_ERR_BUSY);
 }
 
 
@@ -1045,7 +1045,7 @@ ReturnCode RfalRfST25R3916Class::rfalGetTransceiveRSSI(uint16_t *rssi)
   bool     isSumMode;
 
   if (rssi == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   st25r3916GetRSSI(&amRSSI, &pmRSSI);
@@ -1065,7 +1065,7 @@ ReturnCode RfalRfST25R3916Class::rfalGetTransceiveRSSI(uint16_t *rssi)
     /* Check which channel was used */
     *rssi = (st25r3916CheckReg(ST25R3916_REG_AUX_DISPLAY, ST25R3916_REG_AUX_DISPLAY_a_cha, ST25R3916_REG_AUX_DISPLAY_a_cha) ? pmRSSI : amRSSI);
   }
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -1109,14 +1109,14 @@ void RfalRfST25R3916Class::rfalErrorHandling(void)
     /* If we received a frame with a incomplete byte we`ll raise a specific error  *
      * ( support for T2T 4 bit ACK / NAK, MIFARE and Kovio )                       */
     /*******************************************************************************/
-    if ((gRFAL.TxRx.status == ERR_PAR) || (gRFAL.TxRx.status == ERR_CRC)) {
+    if ((gRFAL.TxRx.status == ST_ERR_PAR) || (gRFAL.TxRx.status == ST_ERR_CRC)) {
       if (rfalFIFOStatusIsIncompleteByte()) {
         st25r3916ReadFifo((uint8_t *)(gRFAL.TxRx.ctx.rxBuf), fifoBytesToRead);
         if ((gRFAL.TxRx.ctx.rxRcvdLen) != NULL) {
           *gRFAL.TxRx.ctx.rxRcvdLen = rfalFIFOGetNumIncompleteBits();
         }
 
-        gRFAL.TxRx.status = ERR_INCOMPLETE_BYTE;
+        gRFAL.TxRx.status = ST_ERR_INCOMPLETE_BYTE;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
       }
     }
@@ -1271,7 +1271,7 @@ void RfalRfST25R3916Class::rfalTransceiveTx(void)
   ReturnCode        ret;
 
   /* Suppress warning in case NFC-V feature is disabled */
-  ret = ERR_NONE;
+  ret = ST_ERR_NONE;
   NO_WARNING(ret);
 
   irqs = ST25R3916_IRQ_MASK_NONE;
@@ -1340,7 +1340,7 @@ void RfalRfST25R3916Class::rfalTransceiveTx(void)
         ret = iso15693VCDCode(gRFAL.TxRx.ctx.txBuf, rfalConvBitsToBytes(gRFAL.TxRx.ctx.txBufLen), (((gRFAL.nfcvData.origCtx.flags & (uint32_t)RFAL_TXRX_FLAGS_CRC_TX_MANUAL) != 0U) ? false : true), (((gRFAL.nfcvData.origCtx.flags & (uint32_t)RFAL_TXRX_FLAGS_NFCV_FLAG_MANUAL) != 0U) ? false : true), (RFAL_MODE_POLL_PICOPASS == gRFAL.mode),
                               &gRFAL.fifo.bytesTotal, &gRFAL.nfcvData.nfcvOffset, gRFAL.nfcvData.codingBuffer, MIN((uint16_t)ST25R3916_FIFO_DEPTH, (uint16_t)sizeof(gRFAL.nfcvData.codingBuffer)), &gRFAL.fifo.bytesWritten);
 
-        if ((ret != ERR_NONE) && (ret != ERR_AGAIN)) {
+        if ((ret != ST_ERR_NONE) && (ret != ST_ERR_AGAIN)) {
           gRFAL.TxRx.status = ret;
           gRFAL.TxRx.state  = RFAL_TXRX_STATE_TX_FAIL;
           break;
@@ -1373,7 +1373,7 @@ void RfalRfST25R3916Class::rfalTransceiveTx(void)
       /* If we're in Passive Listen mode ensure that the external field is still On  */
       if (rfalIsModePassiveListen(gRFAL.mode)) {
         if (!rfalIsExtFieldOn()) {
-          gRFAL.TxRx.status = ERR_LINK_LOSS;
+          gRFAL.TxRx.status = ST_ERR_LINK_LOSS;
           gRFAL.TxRx.state  = RFAL_TXRX_STATE_TX_FAIL;
           break;
         }
@@ -1402,7 +1402,7 @@ void RfalRfST25R3916Class::rfalTransceiveTx(void)
       if (((irqs & ST25R3916_IRQ_MASK_FWL) != 0U) && ((irqs & ST25R3916_IRQ_MASK_TXE) == 0U)) {
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_TX_RELOAD_FIFO;
       } else {
-        gRFAL.TxRx.status = ERR_IO;
+        gRFAL.TxRx.status = ST_ERR_IO;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_TX_FAIL;
         break;
       }
@@ -1426,7 +1426,7 @@ void RfalRfST25R3916Class::rfalTransceiveTx(void)
         ret = iso15693VCDCode(gRFAL.TxRx.ctx.txBuf, rfalConvBitsToBytes(gRFAL.TxRx.ctx.txBufLen), (((gRFAL.nfcvData.origCtx.flags & (uint32_t)RFAL_TXRX_FLAGS_CRC_TX_MANUAL) != 0U) ? false : true), (((gRFAL.nfcvData.origCtx.flags & (uint32_t)RFAL_TXRX_FLAGS_NFCV_FLAG_MANUAL) != 0U) ? false : true), (RFAL_MODE_POLL_PICOPASS == gRFAL.mode),
                               &gRFAL.fifo.bytesTotal, &gRFAL.nfcvData.nfcvOffset, gRFAL.nfcvData.codingBuffer, maxLen, &tmp);
 
-        if ((ret != ERR_NONE) && (ret != ERR_AGAIN)) {
+        if ((ret != ST_ERR_NONE) && (ret != ST_ERR_AGAIN)) {
           gRFAL.TxRx.status = ret;
           gRFAL.TxRx.state  = RFAL_TXRX_STATE_TX_FAIL;
           break;
@@ -1464,7 +1464,7 @@ void RfalRfST25R3916Class::rfalTransceiveTx(void)
       } else if ((irqs & ST25R3916_IRQ_MASK_FWL) != 0U) {
         break;  /* Ignore ST25R3916 FIFO WL if total TxLen is already on the FIFO */
       } else {
-        gRFAL.TxRx.status = ERR_IO;
+        gRFAL.TxRx.status = ST_ERR_IO;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_TX_FAIL;
         break;
       }
@@ -1483,7 +1483,7 @@ void RfalRfST25R3916Class::rfalTransceiveTx(void)
         /* Clean up Transceive */
         rfalCleanupTransceive();
 
-        gRFAL.TxRx.status = ERR_NONE;
+        gRFAL.TxRx.status = ST_ERR_NONE;
         gRFAL.TxRx.state  =  RFAL_TXRX_STATE_IDLE;
         break;
       }
@@ -1498,8 +1498,8 @@ void RfalRfST25R3916Class::rfalTransceiveTx(void)
     case RFAL_TXRX_STATE_TX_FAIL:
 
       /* Error should be assigned by previous state */
-      if (gRFAL.TxRx.status == ERR_BUSY) {
-        gRFAL.TxRx.status = ERR_SYSTEM;
+      if (gRFAL.TxRx.status == ST_ERR_BUSY) {
+        gRFAL.TxRx.status = ST_ERR_SYSTEM;
       }
 
       /*Check if Observation Mode was enabled and disable it on ST25R391x */
@@ -1513,7 +1513,7 @@ void RfalRfST25R3916Class::rfalTransceiveTx(void)
 
     /*******************************************************************************/
     default:
-      gRFAL.TxRx.status = ERR_SYSTEM;
+      gRFAL.TxRx.status = ST_ERR_SYSTEM;
       gRFAL.TxRx.state  = RFAL_TXRX_STATE_TX_FAIL;
       break;
   }
@@ -1560,7 +1560,7 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
 
       /* Only raise Timeout if NRE is detected with no Rx Start (NRT EMV mode) */
       if (((irqs & ST25R3916_IRQ_MASK_NRE) != 0U) && ((irqs & ST25R3916_IRQ_MASK_RXS) == 0U)) {
-        gRFAL.TxRx.status = ERR_TIMEOUT;
+        gRFAL.TxRx.status = ST_ERR_TIMEOUT;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
         break;
       }
@@ -1568,7 +1568,7 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
       /* Only raise Link Loss if EOF is detected with no Rx Start */
       if (((irqs & ST25R3916_IRQ_MASK_EOF) != 0U) && ((irqs & ST25R3916_IRQ_MASK_RXS) == 0U)) {
         /* In AP2P a Field On has already occurred - treat this as timeout | mute */
-        gRFAL.TxRx.status = (rfalIsModeActiveComm(gRFAL.mode) ? ERR_TIMEOUT : ERR_LINK_LOSS);
+        gRFAL.TxRx.status = (rfalIsModeActiveComm(gRFAL.mode) ? ST_ERR_TIMEOUT : ST_ERR_LINK_LOSS);
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
         break;
       }
@@ -1583,7 +1583,7 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
 
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_WAIT_RXE;
       } else {
-        gRFAL.TxRx.status = ERR_IO;
+        gRFAL.TxRx.status = ST_ERR_IO;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
         break;
       }
@@ -1604,7 +1604,7 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
       /* corrupted frames.                                                           */
       /* SW timer is used to timeout upon a missing RXE                              */
       if (rfalTimerisExpired(gRFAL.tmr.RXE)) {
-        gRFAL.TxRx.status = ERR_FRAMING;
+        gRFAL.TxRx.status = ST_ERR_FRAMING;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
       }
       /*******************************************************************************/
@@ -1620,12 +1620,12 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
 
         /* Check whether NRT has expired already, if so signal a timeout */
         if (st25r3916GetInterrupt(ST25R3916_IRQ_MASK_NRE) != 0U) {
-          gRFAL.TxRx.status = ERR_TIMEOUT;
+          gRFAL.TxRx.status = ST_ERR_TIMEOUT;
           gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
           break;
         }
         if (st25r3916CheckReg(ST25R3916_REG_NFCIP1_BIT_RATE, ST25R3916_REG_NFCIP1_BIT_RATE_nrt_on, 0)) {    /* MISRA 13.5 */
-          gRFAL.TxRx.status = ERR_TIMEOUT;
+          gRFAL.TxRx.status = ST_ERR_TIMEOUT;
           gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
           break;
         }
@@ -1657,15 +1657,15 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
       /* After RXE retrieve and check for any error irqs */
       irqs |= st25r3916GetInterrupt((ST25R3916_IRQ_MASK_CRC | ST25R3916_IRQ_MASK_PAR | ST25R3916_IRQ_MASK_ERR1 | ST25R3916_IRQ_MASK_ERR2 | ST25R3916_IRQ_MASK_COL));
 
-      gRFAL.TxRx.state = RFAL_TXRX_STATE_RX_ERR_CHECK;
+      gRFAL.TxRx.state = RFAL_TXRX_STATE_RX_ST_ERR_CHECK;
     /* fall through */
 
 
     /*******************************************************************************/
-    case RFAL_TXRX_STATE_RX_ERR_CHECK:   /*  PRQA S 2003 # MISRA 16.3 - Intentional fall through */
+    case RFAL_TXRX_STATE_RX_ST_ERR_CHECK:   /*  PRQA S 2003 # MISRA 16.3 - Intentional fall through */
 
       if ((irqs & ST25R3916_IRQ_MASK_ERR1) != 0U) {
-        gRFAL.TxRx.status = ERR_FRAMING;
+        gRFAL.TxRx.status = ST_ERR_FRAMING;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_READ_DATA;
 
         /* Check if there's a specific error handling for this */
@@ -1674,35 +1674,35 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
       }
       /* Discard Soft Framing errors in AP2P and CE */
       else if (rfalIsModePassivePoll(gRFAL.mode) && ((irqs & ST25R3916_IRQ_MASK_ERR2) != 0U)) {
-        gRFAL.TxRx.status = ERR_FRAMING;
+        gRFAL.TxRx.status = ST_ERR_FRAMING;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_READ_DATA;
 
         /* Check if there's a specific error handling for this */
         rfalErrorHandling();
         break;
       } else if ((irqs & ST25R3916_IRQ_MASK_PAR) != 0U) {
-        gRFAL.TxRx.status = ERR_PAR;
+        gRFAL.TxRx.status = ST_ERR_PAR;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_READ_DATA;
 
         /* Check if there's a specific error handling for this */
         rfalErrorHandling();
         break;
       } else if ((irqs & ST25R3916_IRQ_MASK_CRC) != 0U) {
-        gRFAL.TxRx.status = ERR_CRC;
+        gRFAL.TxRx.status = ST_ERR_CRC;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_READ_DATA;
 
         /* Check if there's a specific error handling for this */
         rfalErrorHandling();
         break;
       } else if ((irqs & ST25R3916_IRQ_MASK_COL) != 0U) {
-        gRFAL.TxRx.status = ERR_RF_COLLISION;
+        gRFAL.TxRx.status = ST_ERR_RF_COLLISION;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_READ_DATA;
 
         /* Check if there's a specific error handling for this */
         rfalErrorHandling();
         break;
       } else if (rfalIsModePassiveListen(gRFAL.mode) && ((irqs & ST25R3916_IRQ_MASK_EOF) != 0U)) {
-        gRFAL.TxRx.status = ERR_LINK_LOSS;
+        gRFAL.TxRx.status = ST_ERR_LINK_LOSS;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
         break;
       } else if ((irqs & ST25R3916_IRQ_MASK_RXE) != 0U) {
@@ -1711,18 +1711,18 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
 
         /* Check if the reception ends with an incomplete byte (residual bits) */
         if (rfalFIFOStatusIsIncompleteByte()) {
-          gRFAL.TxRx.status = ERR_INCOMPLETE_BYTE;
+          gRFAL.TxRx.status = ST_ERR_INCOMPLETE_BYTE;
         }
         /* Check if the reception ends missing parity bit */
         else if (rfalFIFOStatusIsMissingPar()) {
-          gRFAL.TxRx.status = ERR_FRAMING;
+          gRFAL.TxRx.status = ST_ERR_FRAMING;
         } else {
           /* MISRA 15.7 - Empty else */
         }
 
         gRFAL.TxRx.state = RFAL_TXRX_STATE_RX_READ_DATA;
       } else {
-        gRFAL.TxRx.status = ERR_IO;
+        gRFAL.TxRx.status = ST_ERR_IO;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
         break;
       }
@@ -1761,7 +1761,7 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
       if (gRFAL.fifo.bytesTotal > rfalConvBitsToBytes(gRFAL.TxRx.ctx.rxBufLen)) {
         tmp = (uint16_t)(rfalConvBitsToBytes(gRFAL.TxRx.ctx.rxBufLen) - gRFAL.fifo.bytesWritten);
 
-        gRFAL.TxRx.status = ERR_NOMEM;
+        gRFAL.TxRx.status = ST_ERR_NOMEM;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
       }
 
@@ -1777,14 +1777,14 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
 
       /*******************************************************************************/
       /* Decode sub bit stream into payload bits for NFCV, if no error found so far  */
-      if (((RFAL_MODE_POLL_NFCV == gRFAL.mode) || (RFAL_MODE_POLL_PICOPASS == gRFAL.mode)) && (gRFAL.TxRx.status == ERR_BUSY)) {
+      if (((RFAL_MODE_POLL_NFCV == gRFAL.mode) || (RFAL_MODE_POLL_PICOPASS == gRFAL.mode)) && (gRFAL.TxRx.status == ST_ERR_BUSY)) {
         ReturnCode ret;
         uint16_t offset = 0; /* REMARK offset not currently used */
 
         ret = iso15693VICCDecode(gRFAL.TxRx.ctx.rxBuf, gRFAL.fifo.bytesTotal,
                                  gRFAL.nfcvData.origCtx.rxBuf, rfalConvBitsToBytes(gRFAL.nfcvData.origCtx.rxBufLen), &offset, gRFAL.nfcvData.origCtx.rxRcvdLen, gRFAL.nfcvData.ignoreBits, (RFAL_MODE_POLL_PICOPASS == gRFAL.mode));
 
-        if (((ERR_NONE == ret) || (ERR_CRC == ret))
+        if (((ST_ERR_NONE == ret) || (ST_ERR_CRC == ret))
             && (((uint32_t)RFAL_TXRX_FLAGS_CRC_RX_KEEP & gRFAL.nfcvData.origCtx.flags) == 0U)
             && ((*gRFAL.nfcvData.origCtx.rxRcvdLen % RFAL_BITS_IN_BYTE) == 0U)
             && (*gRFAL.nfcvData.origCtx.rxRcvdLen >= rfalConvBytesToBits(RFAL_CRC_LEN))
@@ -1799,12 +1799,12 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
 
         /* Restore original ctx */
         gRFAL.TxRx.ctx    = gRFAL.nfcvData.origCtx;
-        gRFAL.TxRx.status = ((ret != ERR_NONE) ? ret : ERR_BUSY);
+        gRFAL.TxRx.status = ((ret != ST_ERR_NONE) ? ret : ST_ERR_BUSY);
       }
 
       /*******************************************************************************/
       /* If an error as been marked/detected don't fall into to RX_DONE  */
-      if (gRFAL.TxRx.status != ERR_BUSY) {
+      if (gRFAL.TxRx.status != ST_ERR_BUSY) {
         gRFAL.TxRx.state = RFAL_TXRX_STATE_RX_FAIL;
         break;
       }
@@ -1828,7 +1828,7 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
       rfalCleanupTransceive();
 
 
-      gRFAL.TxRx.status = ERR_NONE;
+      gRFAL.TxRx.status = ST_ERR_NONE;
       gRFAL.TxRx.state  = RFAL_TXRX_STATE_IDLE;
       break;
 
@@ -1877,8 +1877,8 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
       rfalCleanupTransceive();
 
       /* Error should be assigned by previous state */
-      if (gRFAL.TxRx.status == ERR_BUSY) {
-        gRFAL.TxRx.status = ERR_SYSTEM;
+      if (gRFAL.TxRx.status == ST_ERR_BUSY) {
+        gRFAL.TxRx.status = ST_ERR_SYSTEM;
       }
 
       /*rfalLogD( "RFAL: curSt: %d  Error: %d \r\n", gRFAL.TxRx.state, gRFAL.TxRx.status );*/
@@ -1909,11 +1909,11 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
       }
 
       if ((irqs & ST25R3916_IRQ_MASK_NRE) != 0U) {
-        gRFAL.TxRx.status = ERR_TIMEOUT;
+        gRFAL.TxRx.status = ST_ERR_TIMEOUT;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
       }
       if ((irqs & ST25R3916_IRQ_MASK_PPON2) != 0U) {
-        gRFAL.TxRx.status = ERR_LINK_LOSS;
+        gRFAL.TxRx.status = ST_ERR_LINK_LOSS;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
       }
       break;
@@ -1930,10 +1930,10 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
       if ((irqs & ST25R3916_IRQ_MASK_CAT) != 0U) {
         gRFAL.TxRx.state = RFAL_TXRX_STATE_RX_DONE;
       } else if ((irqs & ST25R3916_IRQ_MASK_CAC) != 0U) {
-        gRFAL.TxRx.status = ERR_RF_COLLISION;
+        gRFAL.TxRx.status = ST_ERR_RF_COLLISION;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
       } else {
-        gRFAL.TxRx.status = ERR_IO;
+        gRFAL.TxRx.status = ST_ERR_IO;
         gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
       }
       break;
@@ -1941,7 +1941,7 @@ void RfalRfST25R3916Class::rfalTransceiveRx(void)
 
     /*******************************************************************************/
     default:
-      gRFAL.TxRx.status = ERR_SYSTEM;
+      gRFAL.TxRx.status = ST_ERR_SYSTEM;
       gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_FAIL;
       break;
   }
@@ -2007,12 +2007,12 @@ ReturnCode RfalRfST25R3916Class::rfalISO14443ATransceiveShortFrame(rfal14443ASho
 
   /* Check if RFAL is properly initialized */
   if (!st25r3916IsTxEnabled() || (gRFAL.state < RFAL_STATE_MODE_SET) || ((gRFAL.mode != RFAL_MODE_POLL_NFCA) && (gRFAL.mode != RFAL_MODE_POLL_NFCA_T1T))) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* Check for valid parameters */
   if ((rxBuf == NULL) || (rxRcvdLen == NULL) || (fwt == RFAL_FWT_NONE)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /*******************************************************************************/
@@ -2027,7 +2027,7 @@ ReturnCode RfalRfST25R3916Class::rfalISO14443ATransceiveShortFrame(rfal14443ASho
       break;
 
     default:
-      return ERR_PARAM;
+      return ST_ERR_PARAM;
   }
 
 
@@ -2088,7 +2088,7 @@ ReturnCode RfalRfST25R3916Class::rfalISO14443ATransceiveShortFrame(rfal14443ASho
 
   /* Wait for TXE */
   if (st25r3916WaitForInterruptsTimed(ST25R3916_IRQ_MASK_TXE, (uint16_t)MAX(rfalConv1fcToMs(fwt), RFAL_ST25R3916_SW_TMR_MIN_1MS)) == 0U) {
-    ret = ERR_IO;
+    ret = ST_ERR_IO;
   } else {
     /*Check if Observation Mode is enabled and set it on ST25R391x */
     rfalCheckEnableObsModeRx();
@@ -2096,7 +2096,7 @@ ReturnCode RfalRfST25R3916Class::rfalISO14443ATransceiveShortFrame(rfal14443ASho
     /* Jump into a transceive Rx state for reception (bypass Tx states) */
     gRFAL.state       = RFAL_STATE_TXRX;
     gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_IDLE;
-    gRFAL.TxRx.status = ERR_BUSY;
+    gRFAL.TxRx.status = ST_ERR_BUSY;
 
     /* Execute Transceive Rx blocking */
     ret = rfalTransceiveBlockingRx();
@@ -2122,12 +2122,12 @@ ReturnCode RfalRfST25R3916Class::rfalISO14443ATransceiveAnticollisionFrame(uint8
 
   /* Check if RFAL is properly initialized */
   if ((gRFAL.state < RFAL_STATE_MODE_SET) || (gRFAL.mode != RFAL_MODE_POLL_NFCA)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /* Check for valid parameters */
   if ((buf == NULL) || (bytesToSend == NULL) || (bitsToSend == NULL) || (rxLength == NULL)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /*******************************************************************************/
@@ -2178,7 +2178,7 @@ ReturnCode RfalRfST25R3916Class::rfalISO14443ATransceiveAnticollisionFrame(uint8
   /*******************************************************************************/
   /* Run Transceive blocking */
   ret = rfalTransceiveRunBlockingTx();
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     ret = rfalTransceiveBlockingRx();
 
     /*******************************************************************************/
@@ -2188,7 +2188,7 @@ ReturnCode RfalRfST25R3916Class::rfalISO14443ATransceiveAnticollisionFrame(uint8
       buf[(*bytesToSend)] |= collByte;
     }
 
-    if ((ERR_RF_COLLISION == ret)) {
+    if ((ST_ERR_RF_COLLISION == ret)) {
       /* read out collision register */
       st25r3916ReadRegister(ST25R3916_REG_COLLISION_STATUS, &collData);
 
@@ -2226,7 +2226,7 @@ ReturnCode RfalRfST25R3916Class::rfalISO15693TransceiveAnticollisionFrame(uint8_
 
   /* Check if RFAL is properly initialized */
   if ((gRFAL.state < RFAL_STATE_MODE_SET) || (gRFAL.mode != RFAL_MODE_POLL_NFCV)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /*******************************************************************************/
@@ -2252,12 +2252,12 @@ ReturnCode RfalRfST25R3916Class::rfalISO15693TransceiveAnticollisionFrame(uint8_
   /*******************************************************************************/
   /* Run Transceive blocking */
   ret = rfalTransceiveRunBlockingTx();
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     ret = rfalTransceiveBlockingRx();
   }
 
   /* Check if a Transmission error and received data is less then expected */
-  if (((ret == ERR_RF_COLLISION) || (ret == ERR_CRC) || (ret == ERR_FRAMING)) && (rfalConvBitsToBytes(*ctx.rxRcvdLen) < RFAL_ISO15693_INV_RES_LEN)) {
+  if (((ret == ST_ERR_RF_COLLISION) || (ret == ST_ERR_CRC) || (ret == ST_ERR_FRAMING)) && (rfalConvBitsToBytes(*ctx.rxRcvdLen) < RFAL_ISO15693_INV_RES_LEN)) {
     /* If INVENTORY_RES is shorter than expected, tag is still modulating *
      * Ensure that response is complete before next frame                 */
     delay((uint8_t)((RFAL_ISO15693_INV_RES_LEN - rfalConvBitsToBytes(*ctx.rxRcvdLen)) / ((RFAL_ISO15693_INV_RES_LEN / RFAL_ISO15693_INV_RES_DUR) + 1U)));
@@ -2287,7 +2287,7 @@ ReturnCode RfalRfST25R3916Class::rfalISO15693TransceiveEOF(uint8_t *rxBuf, uint8
 
   /* Check if RFAL is properly initialized */
   if ((gRFAL.state < RFAL_STATE_MODE_SET) || (gRFAL.mode != RFAL_MODE_POLL_NFCV)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   /*******************************************************************************/
@@ -2317,7 +2317,7 @@ ReturnCode RfalRfST25R3916Class::rfalFeliCaPoll(rfalFeliCaPollSlots slots, uint1
 
   /* Check if RFAL is properly initialized */
   if ((gRFAL.state < RFAL_STATE_MODE_SET) || (gRFAL.mode != RFAL_MODE_POLL_NFCF)) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   frameIdx    = 0;
@@ -2354,12 +2354,12 @@ ReturnCode RfalRfST25R3916Class::rfalFeliCaPoll(rfalFeliCaPollSlots slots, uint1
 
   /*******************************************************************************/
   /* If Tx OK, Wait for all responses, store them as soon as they appear         */
-  if (ret == ERR_NONE) {
+  if (ret == ST_ERR_NONE) {
     bool timeout;
 
     do {
       ret = rfalTransceiveBlockingRx();
-      if (ret == ERR_TIMEOUT) {
+      if (ret == ST_ERR_TIMEOUT) {
         /* Upon timeout the full Poll Delay + (Slot time)*(nbSlots) has expired */
         timeout = true;
       } else {
@@ -2368,7 +2368,7 @@ ReturnCode RfalRfST25R3916Class::rfalFeliCaPoll(rfalFeliCaPollSlots slots, uint1
         st25r3916ExecuteCommand(ST25R3916_CMD_RESET_RXGAIN);
 
         /* If the reception was OK, new device found */
-        if (ret == ERR_NONE) {
+        if (ret == ST_ERR_NONE) {
           devDetected++;
 
           /* Overwrite the Transceive context for the next reception */
@@ -2383,7 +2383,7 @@ ReturnCode RfalRfST25R3916Class::rfalFeliCaPoll(rfalFeliCaPollSlots slots, uint1
         timeout = st25r3916CheckReg(ST25R3916_REG_NFCIP1_BIT_RATE, ST25R3916_REG_NFCIP1_BIT_RATE_nrt_on, 0x00);
         if (!timeout) {
           /* Jump again into transceive Rx state for the following reception */
-          gRFAL.TxRx.status = ERR_BUSY;
+          gRFAL.TxRx.status = ST_ERR_BUSY;
           gRFAL.state       = RFAL_STATE_TXRX;
           gRFAL.TxRx.state  = RFAL_TXRX_STATE_RX_IDLE;
         }
@@ -2412,7 +2412,7 @@ ReturnCode RfalRfST25R3916Class::rfalFeliCaPoll(rfalFeliCaPollSlots slots, uint1
     *collisionsDetected = colDetected;
   }
 
-  return (((colDetected != 0U) || (devDetected != 0U)) ? ERR_NONE : ret);
+  return (((colDetected != 0U) || (devDetected != 0U)) ? ST_ERR_NONE : ret);
 }
 
 
@@ -2432,7 +2432,7 @@ ReturnCode RfalRfST25R3916Class::rfalListenStart(uint32_t lmMask, const rfalLmCo
   (void)rxBuf;
   (void)rxBufLen;
   (void)rxLen;
-  return ERR_NOTSUPP;
+  return ST_ERR_NOTSUPP;
 }
 
 /*******************************************************************************/
@@ -2442,13 +2442,13 @@ ReturnCode RfalRfST25R3916Class::rfalListenSleepStart(rfalLmState sleepSt, uint8
   (void)rxBuf;
   (void)rxBufLen;
   (void)rxLen;
-  return ERR_NOTSUPP;
+  return ST_ERR_NOTSUPP;
 }
 
 /*******************************************************************************/
 ReturnCode RfalRfST25R3916Class::rfalListenStop(void)
 {
-  return ERR_NOTSUPP;
+  return ST_ERR_NOTSUPP;
 }
 
 /*******************************************************************************/
@@ -2463,7 +2463,7 @@ rfalLmState RfalRfST25R3916Class::rfalListenGetState(bool *dataFlag, rfalBitRate
 ReturnCode RfalRfST25R3916Class::rfalListenSetState(rfalLmState newSt)
 {
   (void)newSt;
-  return ERR_NOTSUPP;
+  return ST_ERR_NOTSUPP;
 }
 
 
@@ -2514,7 +2514,7 @@ ReturnCode RfalRfST25R3916Class::rfalWakeUpModeStart(const rfalWakeUpConfig *con
     /* Check for not supported features */
     if( gRFAL.wum.cfg.cap.enabled )
     {
-        return ERR_NOTSUPP;
+        return ST_ERR_NOTSUPP;
     }
 
     /* Set ST25R3916B Measure Tx delay */
@@ -2525,7 +2525,7 @@ ReturnCode RfalRfST25R3916Class::rfalWakeUpModeStart(const rfalWakeUpConfig *con
   if ((!gRFAL.wum.cfg.cap.enabled && !gRFAL.wum.cfg.indAmp.enabled && !gRFAL.wum.cfg.indPha.enabled)  ||
       (gRFAL.wum.cfg.cap.enabled  && (gRFAL.wum.cfg.indAmp.enabled || gRFAL.wum.cfg.indPha.enabled))  ||
       (gRFAL.wum.cfg.cap.enabled  &&  gRFAL.wum.cfg.swTagDetect)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   irqs = ST25R3916_IRQ_MASK_NONE;
@@ -2669,7 +2669,7 @@ ReturnCode RfalRfST25R3916Class::rfalWakeUpModeStart(const rfalWakeUpConfig *con
   gRFAL.wum.state = RFAL_WUM_STATE_ENABLED;
   gRFAL.state     = RFAL_STATE_WUM;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -2768,7 +2768,7 @@ void RfalRfST25R3916Class::rfalRunWakeUpModeWorker(void)
 ReturnCode RfalRfST25R3916Class::rfalWakeUpModeStop(void)
 {
   if (gRFAL.wum.state == RFAL_WUM_STATE_NOT_INIT) {
-    return ERR_WRONG_STATE;
+    return ST_ERR_WRONG_STATE;
   }
 
   gRFAL.wum.state = RFAL_WUM_STATE_NOT_INIT;
@@ -2786,7 +2786,7 @@ ReturnCode RfalRfST25R3916Class::rfalWakeUpModeStop(void)
   /* Set Analog configurations for Wake-up Off event */
   rfalSetAnalogConfig((RFAL_ANALOG_CONFIG_TECH_CHIP | RFAL_ANALOG_CONFIG_CHIP_WAKEUP_OFF));
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -2798,7 +2798,7 @@ ReturnCode RfalRfST25R3916Class::rfalWakeUpModeStop(void)
 ReturnCode RfalRfST25R3916Class::rfalChipWriteReg(uint16_t reg, const uint8_t *values, uint8_t len)
 {
   if (!st25r3916IsRegValid((uint8_t)reg)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   return st25r3916WriteMultipleRegisters((uint8_t)reg, values, len);
@@ -2809,7 +2809,7 @@ ReturnCode RfalRfST25R3916Class::rfalChipWriteReg(uint16_t reg, const uint8_t *v
 ReturnCode RfalRfST25R3916Class::rfalChipReadReg(uint16_t reg, uint8_t *values, uint8_t len)
 {
   if (!st25r3916IsRegValid((uint8_t)reg)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   return st25r3916ReadMultipleRegisters((uint8_t)reg, values, len);
@@ -2820,7 +2820,7 @@ ReturnCode RfalRfST25R3916Class::rfalChipReadReg(uint16_t reg, uint8_t *values, 
 ReturnCode RfalRfST25R3916Class::rfalChipExecCmd(uint16_t cmd)
 {
   if (!st25r3916IsCmdValid((uint8_t)cmd)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   return st25r3916ExecuteCommand((uint8_t) cmd);
@@ -2845,7 +2845,7 @@ ReturnCode RfalRfST25R3916Class::rfalChipReadTestReg(uint16_t reg, uint8_t *valu
 ReturnCode RfalRfST25R3916Class::rfalChipChangeRegBits(uint16_t reg, uint8_t valueMask, uint8_t value)
 {
   if (!st25r3916IsRegValid((uint8_t)reg)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   return st25r3916ChangeRegisterBits((uint8_t)reg, valueMask, value);
@@ -2856,7 +2856,7 @@ ReturnCode RfalRfST25R3916Class::rfalChipChangeRegBits(uint16_t reg, uint8_t val
 ReturnCode RfalRfST25R3916Class::rfalChipChangeTestRegBits(uint16_t reg, uint8_t valueMask, uint8_t value)
 {
   st25r3916ChangeTestRegisterBits((uint8_t)reg, valueMask, value);
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -2921,7 +2921,7 @@ ReturnCode RfalRfST25R3916Class::rfalChipMeasurePhase(uint8_t *result)
 {
   st25r3916MeasurePhase(result);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -2930,7 +2930,7 @@ ReturnCode RfalRfST25R3916Class::rfalChipMeasureCapacitance(uint8_t *result)
 {
   st25r3916MeasureCapacitance(result);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -2939,7 +2939,7 @@ ReturnCode RfalRfST25R3916Class::rfalChipMeasurePowerSupply(uint8_t param, uint8
 {
   *result = st25r3916MeasurePowerSupply(param);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 void RfalRfST25R3916Class::setISRPending(void)

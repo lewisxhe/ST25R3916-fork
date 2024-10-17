@@ -384,7 +384,7 @@ typedef void (*ST25R3916IrqHandler)(void);
 
 
 #define rfalGetIncmplBits( FIFOStatus2 )         (( (FIFOStatus2) >> 1) & 0x07U)                                           /*!< Returns the number of bits from fifo status                  */
-#define rfalIsIncompleteByteError( error )       (((error) >= ERR_INCOMPLETE_BYTE) && ((error) <= ERR_INCOMPLETE_BYTE_07)) /*!< Checks if given error is a Incomplete error                  */
+#define rfalIsIncompleteByteError( error )       (((error) >= ST_ERR_INCOMPLETE_BYTE) && ((error) <= ST_ERR_INCOMPLETE_BYTE_07)) /*!< Checks if given error is a Incomplete error                  */
 
 #define rfalAdjACBR( b )                         (((uint16_t)(b) >= (uint16_t)RFAL_BR_52p97) ? (uint16_t)(b) : ((uint16_t)(b)+1U))          /*!< Adjusts ST25R391x Bit rate to Analog Configuration              */
 #define rfalConvBR2ACBR( b )                     (((rfalAdjACBR((b)))<<RFAL_ANALOG_CONFIG_BITRATE_SHIFT) & RFAL_ANALOG_CONFIG_BITRATE_MASK) /*!< Converts ST25R391x Bit rate to Analog Configuration bit rate id */
@@ -493,10 +493,10 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[in]  configTbl:     location of config Table to be loaded
      * \param[in]  configTblSize: size of the config Table to be loaded
      *
-     * \return ERR_NONE    : if setting is updated
-     * \return ERR_PARAM   : if configTbl is invalid
-     * \return ERR_NOMEM   : if the given Table is bigger exceeds the max size
-     * \return ERR_REQUEST : if the update Configuration Id is disabled
+     * \return ST_ERR_NONE    : if setting is updated
+     * \return ST_ERR_PARAM   : if configTbl is invalid
+     * \return ST_ERR_NOMEM   : if the given Table is bigger exceeds the max size
+     * \return ST_ERR_REQUEST : if the update Configuration Id is disabled
      *
      *****************************************************************************
      */
@@ -515,10 +515,10 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *                   0x01 indicates more Configuration ID setting(s) are coming.
      * \param[in]  *config: reference to the configuration list of current Configuration ID.
      *
-     * \return ERR_PARAM   : if Configuration ID or parameter is invalid
-     * \return ERR_NOMEM   : if LUT is full
-     * \return ERR_REQUEST : if the update Configuration Id is disabled
-     * \return ERR_NONE    : if setting is updated
+     * \return ST_ERR_PARAM   : if Configuration ID or parameter is invalid
+     * \return ST_ERR_NOMEM   : if LUT is full
+     * \return ST_ERR_REQUEST : if the update Configuration Id is disabled
+     * \return ST_ERR_NONE    : if setting is updated
      *
      *****************************************************************************
      */
@@ -534,9 +534,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[in]    tblBufLen: length of the buffer to place the Config Table
      * \param[out]   configTblSize: Config Table size
      *
-     * \return ERR_PARAM : if configTbl or configTblSize is invalid
-     * \return ERR_NOMEM : if configTblSize is not enough for the whole table
-     * \return ERR_NONE  : if read is successful
+     * \return ST_ERR_PARAM : if configTbl or configTblSize is invalid
+     * \return ST_ERR_NOMEM : if configTblSize is not enough for the whole table
+     * \return ST_ERR_NONE  : if read is successful
      *
      *****************************************************************************
      */
@@ -554,8 +554,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[out]    config: configuration id, number of configuration sets and register-mask-value sets
      * \param[in]     numConfig: the remaining configuration settings space available;
      *
-     * \return ERR_NOMEM : if number of Configuration for respective Configuration ID is greater the the remaining configuration setting space available
-     * \return ERR_NONE  : if read is successful
+     * \return ST_ERR_NOMEM : if number of Configuration for respective Configuration ID is greater the the remaining configuration setting space available
+     * \return ST_ERR_NONE  : if read is successful
      *
      *****************************************************************************
      */
@@ -569,9 +569,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      * \param[in]  configId: configuration ID
      *
-     * \return ERR_PARAM if Configuration ID is invalid
-     * \return ERR_INTERNAL if error updating setting to chip
-     * \return ERR_NONE if new settings is applied to chip
+     * \return ST_ERR_PARAM if Configuration ID is invalid
+     * \return ST_ERR_INTERNAL if error updating setting to chip
+     * \return ST_ERR_NONE if new settings is applied to chip
      *
      *****************************************************************************
      */
@@ -597,9 +597,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[in] len: number of consecutive registers to be written
      *
      *
-     * \return ERR_PARAM    : Invalid register or bad request
-     * \return ERR_NOTSUPP  : Feature not supported
-     * \return ERR_NONE     : Write done with no error
+     * \return ST_ERR_PARAM    : Invalid register or bad request
+     * \return ST_ERR_NOTSUPP  : Feature not supported
+     * \return ST_ERR_NONE     : Write done with no error
      *****************************************************************************
      */
     ReturnCode rfalChipWriteReg(uint16_t reg, const uint8_t *values, uint8_t len);
@@ -615,9 +615,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[out] values: pointer where the register(s) read content will be placed
      * \param[in]  len: number of consecutive registers to be read
      *
-     * \return ERR_PARAM    : Invalid register or bad request
-     * \return ERR_NOTSUPP  : Feature not supported
-     * \return ERR_NONE     : Read done with no error
+     * \return ST_ERR_PARAM    : Invalid register or bad request
+     * \return ST_ERR_NOTSUPP  : Feature not supported
+     * \return ST_ERR_NONE     : Read done with no error
      *****************************************************************************
      */
     ReturnCode rfalChipReadReg(uint16_t reg, uint8_t *values, uint8_t len);
@@ -632,9 +632,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[in] valueMask: mask value of the register bits to be changed
      * \param[in] value: register value to be set
      *
-     * \return ERR_PARAM    : Invalid register or bad request
-     * \return ERR_NOTSUPP  : Feature not supported
-     * \return ERR_OK       : Change done with no error
+     * \return ST_ERR_PARAM    : Invalid register or bad request
+     * \return ST_ERR_NOTSUPP  : Feature not supported
+     * \return ST_ERR_OK       : Change done with no error
      *****************************************************************************
      */
     ReturnCode rfalChipChangeRegBits(uint16_t reg, uint8_t valueMask, uint8_t value);
@@ -649,9 +649,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[in] value: value to be written on the register
      *
      *
-     * \return ERR_PARAM    : Invalid register or bad request
-     * \return ERR_NOTSUPP  : Feature not supported
-     * \return ERR_NONE     : Write done with no error
+     * \return ST_ERR_PARAM    : Invalid register or bad request
+     * \return ST_ERR_NOTSUPP  : Feature not supported
+     * \return ST_ERR_NONE     : Write done with no error
      *****************************************************************************
      */
     ReturnCode rfalChipWriteTestReg(uint16_t reg, uint8_t value);
@@ -665,9 +665,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[in]  reg: register address to be read
      * \param[out] value: pointer where the register content will be placed
      *
-     * \return ERR_PARAM    :Invalid register or bad request
-     * \return ERR_NOTSUPP  : Feature not supported
-     * \return ERR_NONE     : Read done with no error
+     * \return ST_ERR_PARAM    :Invalid register or bad request
+     * \return ST_ERR_NOTSUPP  : Feature not supported
+     * \return ST_ERR_NONE     : Read done with no error
      *****************************************************************************
      */
     ReturnCode rfalChipReadTestReg(uint16_t reg, uint8_t *value);
@@ -682,9 +682,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[in] valueMask: mask value of the register bits to be changed
      * \param[in] value: register value to be set
      *
-     * \return ERR_PARAM     : Invalid register or bad request
-     * \return ERR_NOTSUPP   : Feature not supported
-     * \return ERR_OK        : Change done with no error
+     * \return ST_ERR_PARAM     : Invalid register or bad request
+     * \return ST_ERR_NOTSUPP   : Feature not supported
+     * \return ST_ERR_OK        : Change done with no error
      *****************************************************************************
      */
     ReturnCode rfalChipChangeTestRegBits(uint16_t reg, uint8_t valueMask, uint8_t value);
@@ -698,9 +698,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      * \param[in] cmd: direct command to be executed
      *
-     * \return ERR_PARAM     : Invalid command or bad request
-     * \return  ERR_NOTSUPP  : Feature not supported
-     * \return ERR_NONE      : Direct command executed with no error
+     * \return ST_ERR_PARAM     : Invalid command or bad request
+     * \return  ST_ERR_NOTSUPP  : Feature not supported
+     * \return ST_ERR_NONE      : Direct command executed with no error
      *****************************************************************************
      */
     ReturnCode rfalChipExecCmd(uint16_t cmd);
@@ -713,9 +713,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      * \param[in] rfo : the RFO value to be used
      *
-     * \return  ERR_IO           : Internal error
-     * \return  ERR_NOTSUPP      : Feature not supported
-     * \return  ERR_NONE         : No error
+     * \return  ST_ERR_IO           : Internal error
+     * \return  ST_ERR_NOTSUPP      : Feature not supported
+     * \return  ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalChipSetRFO(uint8_t rfo);
@@ -729,9 +729,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      * \param[out] result : the current RFO value
      *
-     * \return  ERR_IO           : Internal error
-     * \return  ERR_NOTSUPP      : Feature not supported
-     * \return  ERR_NONE         : No error
+     * \return  ST_ERR_IO           : Internal error
+     * \return  ST_ERR_NOTSUPP      : Feature not supported
+     * \return  ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalChipGetRFO(uint8_t *result);
@@ -745,9 +745,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      * \param[out] result : result of RF measurement
      *
-     * \return  ERR_IO           : Internal error
-     * \return  ERR_NOTSUPP      : Feature not supported
-     * \return  ERR_NONE         : No error
+     * \return  ST_ERR_IO           : Internal error
+     * \return  ST_ERR_NOTSUPP      : Feature not supported
+     * \return  ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalChipMeasureAmplitude(uint8_t *result);
@@ -761,9 +761,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      * \param[out] result : result of Phase measurement
      *
-     * \return  ERR_IO           : Internal error
-     * \return  ERR_NOTSUPP      : Feature not supported
-     * \return  ERR_NONE         : No error
+     * \return  ST_ERR_IO           : Internal error
+     * \return  ST_ERR_NOTSUPP      : Feature not supported
+     * \return  ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalChipMeasurePhase(uint8_t *result);
@@ -777,9 +777,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      * \param[out] result : result of Capacitance measurement
      *
-     * \return  ERR_IO           : Internal error
-     * \return  ERR_NOTSUPP      : Feature not supported
-     * \return  ERR_NONE         : No error
+     * \return  ST_ERR_IO           : Internal error
+     * \return  ST_ERR_NOTSUPP      : Feature not supported
+     * \return  ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalChipMeasureCapacitance(uint8_t *result);
@@ -794,9 +794,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      * \param[in]   param : measurement parameter (chip specific)
      * \param[out] result : result of the measurement
      *
-     * \return  ERR_IO           : Internal error
-     * \return  ERR_NOTSUPP      : Feature not supported
-     * \return  ERR_NONE         : No error
+     * \return  ST_ERR_IO           : Internal error
+     * \return  ST_ERR_NOTSUPP      : Feature not supported
+     * \return  ST_ERR_NONE         : No error
      *****************************************************************************
      */
     ReturnCode rfalChipMeasurePowerSupply(uint8_t param, uint8_t *result);
@@ -844,8 +844,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[out] needed_stream_config : return a pointer to the stream config
      *              needed for this iso15693 config. To be used for configure RF chip.
      *
-     *  \return ERR_IO : Error during communication.
-     *  \return ERR_NONE : No error.
+     *  \return ST_ERR_IO : Error during communication.
+     *  \return ST_ERR_NONE : No error.
      *
      *****************************************************************************
      */
@@ -861,7 +861,7 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  \param[out] config : ISO15693 phy configuration.
      *
-     *  \return ERR_NONE : No error.
+     *  \return ST_ERR_NONE : No error.
      *
      *****************************************************************************
      */
@@ -888,11 +888,11 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[out] outBufSize : the size of the output buffer
      *  \param[out] actOutBufSize : the amount of data stored into the buffer at this call
      *
-     *  \return ERR_IO : Error during communication.
-     *  \return ERR_AGAIN : Data was not coded all the way. Call function again with a new/emptied buffer
-     *  \return ERR_NO_MEM : In case outBuf is not big enough. Needs to have at
+     *  \return ST_ERR_IO : Error during communication.
+     *  \return ST_ERR_AGAIN : Data was not coded all the way. Call function again with a new/emptied buffer
+     *  \return ST_ERR_NO_MEM : In case outBuf is not big enough. Needs to have at
                  least 5 bytes for 1of4 coding and 65 bytes for 1of256 coding
-     *  \return ERR_NONE : No error.
+     *  \return ST_ERR_NONE : No error.
      *
      *****************************************************************************
      */
@@ -915,15 +915,15 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in] outBufLen : Length of output buffer, should be approx twice the size of inBuf
      *  \param[out] outBufPos : The number of decoded bytes. Could be used in
      *                          extended implementation to allow multiple calls
-     *  \param[out] bitsBeforeCol : in case of ERR_COLLISION this value holds the
+     *  \param[out] bitsBeforeCol : in case of ST_ERR_COLLISION this value holds the
      *   number of bits in the current byte where the collision happened.
      *  \param[in] ignoreBits : number of bits in the beginning where collisions will be ignored
      *  \param[in] picopassMode :  if set to true, the decoding will be according to Picopass
      *
-     *  \return ERR_COLLISION : collision occurred, data incorrect
-     *  \return ERR_CRC : CRC error, data incorrect
-     *  \return ERR_TIMEOUT : timeout waiting for data.
-     *  \return ERR_NONE : No error.
+     *  \return ST_ERR_COLLISION : collision occurred, data incorrect
+     *  \return ST_ERR_CRC : CRC error, data incorrect
+     *  \return ST_ERR_TIMEOUT : timeout waiting for data.
+     *  \return ST_ERR_NONE : No error.
      *
      *****************************************************************************
      */
@@ -950,8 +950,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  This function initialises the ST25R3916 driver.
      *
-     *  \return ERR_NONE         : Operation successful
-     *  \return ERR_HW_MISMATCH  : Expected HW do not match or communication error
+     *  \return ST_ERR_NONE         : Operation successful
+     *  \return ST_ERR_HW_MISMATCH  : Expected HW do not match or communication error
      *****************************************************************************
      */
     ReturnCode st25r3916Initialize(void);
@@ -988,8 +988,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param rxrate : speed is 2^rxrate * 106 kb/s
      *                  0xff : don't set rxrate (ST25R3916_BR_DO_NOT_SET)
      *
-     *  \return ERR_PARAM: At least one bit rate was invalid
-     *  \return ERR_NONE : No error, both bit rates were set
+     *  \return ST_ERR_PARAM: At least one bit rate was invalid
+     *  \return ST_ERR_NONE : No error, both bit rates were set
      *
      *****************************************************************************
      */
@@ -1007,8 +1007,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  \param [out] result_mV : Result of calibration in milliVolts
      *
-     *  \return ERR_IO : Error during communication with ST25R3916
-     *  \return ERR_NONE : No error
+     *  \return ST_ERR_IO : Error during communication with ST25R3916
+     *  \return ST_ERR_NONE : No error
      *
      *****************************************************************************
      */
@@ -1023,8 +1023,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  \param[out] result:  result of RF measurement.
      *
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_NONE  : No error
      *
      *****************************************************************************
      */
@@ -1076,8 +1076,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  \param[out] result: 8 bit long result of the measurement.
      *
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_NONE  : No error
      *
      *****************************************************************************
      */
@@ -1093,8 +1093,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  \param[out] result: 8 bit long result of RF measurement.
      *
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_NONE  : No error
      *
      *****************************************************************************
      */
@@ -1116,9 +1116,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[out] result: 5 bit long result of the calibration.
      *                      Binary weighted, step 0.1 pF, max 3.1 pF
      *
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_IO    : The calibration was not successful
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_IO    : The calibration was not successful
+     *  \return ST_ERR_NONE  : No error
      *
      *****************************************************************************
      */
@@ -1145,8 +1145,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  \param [in] nrt_64fcs : no response time in steps of 64/fc (4.72us)
      *
-     *  \return ERR_PARAM : Invalid parameter (time is too large)
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_PARAM : Invalid parameter (time is too large)
+     *  \return ST_ERR_NONE  : No error
      *
      *****************************************************************************
      */
@@ -1162,8 +1162,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  \param [in] nrt_64fcs : no response time in steps of 64/fc (4.72us)
      *
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_NONE  : No error
      *
      *****************************************************************************
      */
@@ -1191,8 +1191,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param [in] gpt_8fcs : general purpose timer timeout in  steps of8/fc (590ns)
      *  \param [in] trigger_source : no trigger, start of Rx, end of Rx, end of Tx in NFC mode
      *
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_NONE  : No error
      *
      *****************************************************************************
      */
@@ -1251,9 +1251,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *                           0xff : don't set Threshold (ST25R3916_THRESHOLD_DO_NOT_SET)
      *  \param[in] nTRFW       : Number of TRFW
      *
-     *  \return ERR_PARAM        : Invalid parameter
-     *  \return ERR_RF_COLLISION : Collision detected
-     *  \return ERR_NONE         : No collision detected
+     *  \return ST_ERR_PARAM        : Invalid parameter
+     *  \return ST_ERR_RF_COLLISION : Collision detected
+     *  \return ST_ERR_NONE         : No collision detected
      *
      *****************************************************************************
      */
@@ -1282,8 +1282,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[out] regDump : pointer to the struct/buffer where the reg dump
      *                        will be written
      *
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_NONE  : No error
      *****************************************************************************
      */
     ReturnCode st25r3916GetRegsDump(t_st25r3916Regs *regDump);
@@ -1311,8 +1311,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  \param[in] config : all settings for bitrates, type, etc.
      *
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_NONE  : No error, stream mode driver initialized
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_NONE  : No error, stream mode driver initialized
      *
      *****************************************************************************
      */
@@ -1331,7 +1331,7 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  tout  : time in milliseconds to wait before reading the result
      *  \param[out] result: result
      *
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_NONE  : No error
      *
      *****************************************************************************
      */
@@ -1348,8 +1348,8 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[out] amRssi: the RSSI on the AM channel expressed in mV
      *  \param[out] pmRssi: the RSSI on the PM channel expressed in mV
      *
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_NONE  : No error
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_NONE  : No error
      *
      *****************************************************************************
      */
@@ -1390,9 +1390,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  reg: Address of register to read.
      *  \param[out] val: Returned value.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ReadRegister(uint8_t reg, uint8_t *val);
@@ -1409,9 +1409,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  values: pointer to a buffer where the result shall be written to.
      *  \param[in]  length: Number of registers to be read out.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ReadMultipleRegisters(uint8_t reg, uint8_t *values, uint8_t length);
@@ -1425,9 +1425,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  reg: Address of the register to write.
      *  \param[in]  val: Value to be written.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916WriteRegister(uint8_t reg, uint8_t val);
@@ -1444,9 +1444,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  values: pointer to a buffer containing the values to be written.
      *  \param[in]  length: Number of values to be written.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916WriteMultipleRegisters(uint8_t reg, const uint8_t *values, uint8_t length);
@@ -1461,9 +1461,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *                      to the FIFO.
      *  \param[in]  length: Number of values to be written.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916WriteFifo(const uint8_t *values, uint16_t length);
@@ -1481,9 +1481,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \note: This function doesn't check whether \a length is really the
      *  number of available bytes in FIFO
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ReadFifo(uint8_t *buf, uint16_t length);
@@ -1499,9 +1499,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *                      to the Passive Target Memory.
      *  \param[in]  length: Number of values to be written.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916WritePTMem(const uint8_t *values, uint16_t length);
@@ -1517,9 +1517,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *                       written to.
      *  \param[in]  length: Number of bytes to read.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ReadPTMem(uint8_t *values, uint16_t length);
@@ -1534,9 +1534,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *                      to the Passive Target Memory
      *  \param[in]  length: Number of values to be written.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916WritePTMemF(const uint8_t *values, uint16_t length);
@@ -1551,9 +1551,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *                      to the Passive Target Memory.
      *  \param[in]  length: Number of values to be written.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916WritePTMemTSN(const uint8_t *values, uint16_t length);
@@ -1568,9 +1568,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *
      *  \param[in]  cmd : code of the direct command to be executed.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ExecuteCommand(uint8_t cmd);
@@ -1584,9 +1584,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]   reg: Address of the register to read
      *  \param[out]  val: Returned read value
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ReadTestRegister(uint8_t reg, uint8_t *val);
@@ -1600,9 +1600,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  reg: Address of the register to write
      *  \param[in]  val: Value to be written
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916WriteTestRegister(uint8_t reg, uint8_t val);
@@ -1616,9 +1616,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  reg: Address of the register clear
      *  \param[in]  clr_mask: Bitmask of bit to be cleared
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ClrRegisterBits(uint8_t reg, uint8_t clr_mask);
@@ -1632,9 +1632,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  reg: Address of the register clear
      *  \param[in]  set_mask: Bitmask of bit to be cleared
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916SetRegisterBits(uint8_t reg, uint8_t set_mask);
@@ -1650,9 +1650,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  valueMask: bitmask of bits to be changed
      *  \param[in]  value: the bits to be written on the enabled valueMask bits
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ChangeRegisterBits(uint8_t reg, uint8_t valueMask, uint8_t value);
@@ -1668,9 +1668,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  clr_mask: bitmask of bits to be cleared to 0.
      *  \param[in]  set_mask: bitmask of bits to be set to 1.
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ModifyRegister(uint8_t reg, uint8_t clr_mask, uint8_t set_mask);
@@ -1686,9 +1686,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *  \param[in]  valueMask: bitmask of bits to be changed
      *  \param[in]  value: the bits to be written on the enabled valueMask bits
      *
-     *  \return ERR_NONE  : Operation successful
-     *  \return ERR_PARAM : Invalid parameter
-     *  \return ERR_SEND  : Transmission error or acknowledge not received
+     *  \return ST_ERR_NONE  : Operation successful
+     *  \return ST_ERR_PARAM : Invalid parameter
+     *  \return ST_ERR_SEND  : Transmission error or acknowledge not received
      *****************************************************************************
      */
     ReturnCode st25r3916ChangeTestRegisterBits(uint8_t reg, uint8_t valueMask, uint8_t value);
@@ -1957,9 +1957,9 @@ class RfalRfST25R3916Class : public RfalRfClass {
      *                             no further information is returned, only registers
      *                             ST25R3916 (AAT_A,B) will be adapted.
      *
-     *  \return ERR_IO    : Error during communication.
-     *  \return ERR_PARAM : Invalid input parameters
-     *  \return ERR_NONE  : No error.
+     *  \return ST_ERR_IO    : Error during communication.
+     *  \return ST_ERR_PARAM : Invalid input parameters
+     *  \return ST_ERR_NONE  : No error.
      *
      *****************************************************************************
      */

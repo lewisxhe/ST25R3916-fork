@@ -102,7 +102,7 @@ ReturnCode RfalRfST25R3916Class::rfalAnalogConfigListWriteRaw(const uint8_t *con
   // If Analog Configuration Update is to be disabled
   NO_WARNING(configTbl);
   NO_WARNING(configTblSize);
-  return ERR_REQUEST;
+  return ST_ERR_REQUEST;
 }
 
 ReturnCode RfalRfST25R3916Class::rfalAnalogConfigListWrite(uint8_t more, const rfalAnalogConfig *config)
@@ -110,19 +110,19 @@ ReturnCode RfalRfST25R3916Class::rfalAnalogConfigListWrite(uint8_t more, const r
   // If Analog Configuration Update is to be disabled
   NO_WARNING(config);
   NO_WARNING(more);
-  return ERR_DISABLED;
+  return ST_ERR_DISABLED;
 } /* rfalAnalogConfigListUpdate() */
 
 ReturnCode RfalRfST25R3916Class::rfalAnalogConfigListReadRaw(uint8_t *tblBuf, uint16_t tblBufLen, uint16_t *configTblSize)
 {
   /* Check if the the current table will fit into the given buffer */
   if (tblBufLen < gRfalAnalogConfigMgmt.configTblSize) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   /* Check for invalid parameters */
   if (configTblSize == NULL) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   /* Copy the whole Table to the given buffer */
@@ -131,7 +131,7 @@ ReturnCode RfalRfST25R3916Class::rfalAnalogConfigListReadRaw(uint8_t *tblBuf, ui
   }
   *configTblSize = gRfalAnalogConfigMgmt.configTblSize;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 ReturnCode RfalRfST25R3916Class::rfalAnalogConfigListRead(rfalAnalogConfigOffset *configOffset, uint8_t *more, rfalAnalogConfig *config, rfalAnalogConfigNum numConfig)
@@ -142,7 +142,7 @@ ReturnCode RfalRfST25R3916Class::rfalAnalogConfigListRead(rfalAnalogConfigOffset
 
   /* Check if the number of register-mask-value settings for the respective Configuration ID will fit into the buffer passed in. */
   if (gRfalAnalogConfigMgmt.currentAnalogConfigTbl[offset + sizeof(rfalAnalogConfigId)] > numConfig) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   /* Get the number of Configuration set */
@@ -160,7 +160,7 @@ ReturnCode RfalRfST25R3916Class::rfalAnalogConfigListRead(rfalAnalogConfigOffset
   *more = (uint8_t)((*configOffset >= gRfalAnalogConfigMgmt.configTblSize) ? RFAL_ANALOG_CONFIG_UPDATE_LAST
                     : RFAL_ANALOG_CONFIG_UPDATE_MORE);
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 } /* rfalAnalogConfigListRead() */
 
 
@@ -169,11 +169,11 @@ ReturnCode RfalRfST25R3916Class::rfalSetAnalogConfig(rfalAnalogConfigId configId
   rfalAnalogConfigOffset configOffset = 0;
   rfalAnalogConfigNum numConfigSet;
   rfalAnalogConfigRegAddrMaskVal *configTbl;
-  ReturnCode retCode = ERR_NONE;
+  ReturnCode retCode = ST_ERR_NONE;
   rfalAnalogConfigNum i;
 
   if (true != gRfalAnalogConfigMgmt.ready) {
-    return ERR_REQUEST;
+    return ST_ERR_REQUEST;
   }
 
   /* Search LUT for the specific Configuration ID. */
@@ -189,7 +189,7 @@ ReturnCode RfalRfST25R3916Class::rfalSetAnalogConfig(rfalAnalogConfigId configId
 
     if ((gRfalAnalogConfigMgmt.configTblSize + 1U) < configOffset) {
       /* Error check make sure that the we do not access outside the configuration Table Size */
-      return ERR_NOMEM;
+      return ST_ERR_NOMEM;
     }
 
     for (i = 0; i < numConfigSet; i++) {

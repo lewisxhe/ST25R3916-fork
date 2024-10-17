@@ -103,21 +103,21 @@ ReturnCode RfalRfST25R3916Class::iso15693PhyConfigure(const iso15693PhyConfig_t 
 
   *needed_stream_config = &stream_config;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 ReturnCode RfalRfST25R3916Class::iso15693PhyGetConfiguration(iso15693PhyConfig_t *config)
 {
   ST_MEMCPY(config, &iso15693PhyConfig, sizeof(iso15693PhyConfig_t));
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 ReturnCode RfalRfST25R3916Class::iso15693VCDCode(uint8_t *buffer, uint16_t length, bool sendCrc, bool sendFlags, bool picopassMode,
                                                  uint16_t *subbit_total_length, uint16_t *offset,
                                                  uint8_t *outbuf, uint16_t outBufSize, uint16_t *actOutBufSize)
 {
-  ReturnCode err = ERR_NONE;
+  ReturnCode err = ST_ERR_NONE;
   uint8_t eof, sof;
   uint8_t transbuf[2];
   uint16_t crc = 0;
@@ -140,7 +140,7 @@ ReturnCode RfalRfST25R3916Class::iso15693VCDCode(uint8_t *buffer, uint16_t lengt
                               + 1U) /* EOF */
                            );
     if (outBufSize < 5U) { /* 5 should be safe: enough for sof + 1byte data in 1of4 */
-      return ERR_NOMEM;
+      return ST_ERR_NOMEM;
     }
   } else {
     sof = ISO15693_DAT_SOF_1_256;
@@ -154,11 +154,11 @@ ReturnCode RfalRfST25R3916Class::iso15693VCDCode(uint8_t *buffer, uint16_t lengt
 
     if (*offset != 0U) {
       if (outBufSize < 64U) { /* 64 should be safe: enough a single byte data in 1of256 */
-        return ERR_NOMEM;
+        return ST_ERR_NOMEM;
       }
     } else {
       if (outBufSize < 65U) { /* At beginning of a frame we need at least 65 bytes to start: enough for sof + 1byte data in 1of256 */
-        return ERR_NOMEM;
+        return ST_ERR_NOMEM;
       }
     }
   }
@@ -185,22 +185,22 @@ ReturnCode RfalRfST25R3916Class::iso15693VCDCode(uint8_t *buffer, uint16_t lengt
     outputBuf++;
   }
 
-  while ((*offset < length) && (err == ERR_NONE)) {
+  while ((*offset < length) && (err == ST_ERR_NONE)) {
     uint16_t filled_size;
     /* send data */
     err = txFunc(buffer[*offset], outputBuf, outputBufSize, &filled_size);
     (*actOutBufSize) += filled_size;
     outputBuf = &outputBuf[filled_size];  /* MISRA 18.4: Avoid pointer arithmetic */
     outputBufSize -= filled_size;
-    if (err == ERR_NONE) {
+    if (err == ST_ERR_NONE) {
       (*offset)++;
     }
   }
-  if (err != ERR_NONE) {
-    return ERR_AGAIN;
+  if (err != ST_ERR_NONE) {
+    return ST_ERR_AGAIN;
   }
 
-  while ((err == ERR_NONE) && sendCrc && (*offset < (length + 2U))) {
+  while ((err == ST_ERR_NONE) && sendCrc && (*offset < (length + 2U))) {
     uint16_t filled_size;
     if (0U == crc) {
       crc = rfalCrcCalculateCcitt((uint16_t)((picopassMode) ? 0xE012U : 0xFFFFU),          /* In PicoPass Mode a different Preset Value is used   */
@@ -216,12 +216,12 @@ ReturnCode RfalRfST25R3916Class::iso15693VCDCode(uint8_t *buffer, uint16_t lengt
     (*actOutBufSize) += filled_size;
     outputBuf = &outputBuf[filled_size];  /* MISRA 18.4: Avoid pointer arithmetic */
     outputBufSize -= filled_size;
-    if (err == ERR_NONE) {
+    if (err == ST_ERR_NONE) {
       (*offset)++;
     }
   }
-  if (err != ERR_NONE) {
-    return ERR_AGAIN;
+  if (err != ST_ERR_NONE) {
+    return ST_ERR_AGAIN;
   }
 
   if ((!sendCrc && (*offset == length))
@@ -231,7 +231,7 @@ ReturnCode RfalRfST25R3916Class::iso15693VCDCode(uint8_t *buffer, uint16_t lengt
     outputBufSize--;
     outputBuf++;
   } else {
-    return ERR_AGAIN;
+    return ST_ERR_AGAIN;
   }
 
   return err;
@@ -246,7 +246,7 @@ ReturnCode RfalRfST25R3916Class::iso15693VICCDecode(const uint8_t *inBuf,
                                                     uint16_t ignoreBits,
                                                     bool picopassMode)
 {
-  ReturnCode err = ERR_NONE;
+  ReturnCode err = ST_ERR_NONE;
   uint16_t crc;
   uint16_t mp; /* Current bit position in manchester bit inBuf*/
   uint16_t bp; /* Current bit position in outBuf */
@@ -257,12 +257,12 @@ ReturnCode RfalRfST25R3916Class::iso15693VICCDecode(const uint8_t *inBuf,
   /* first check for valid SOF. Since it starts with 3 unmodulated pulses it is 0x17. */
   if ((inBuf[0] & 0x1fU) != 0x17U) {
     ISO_15693_DEBUG("0x%x\n", iso15693PhyBitBuffer[0]);
-    return ERR_FRAMING;
+    return ST_ERR_FRAMING;
   }
   ISO_15693_DEBUG("SOF\n");
 
   if (outBufLen == 0U) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   mp = 5; /* 5 bits were SOF, now manchester starts: 2 bits per payload bit */
@@ -271,7 +271,7 @@ ReturnCode RfalRfST25R3916Class::iso15693VICCDecode(const uint8_t *inBuf,
   ST_MEMSET(outBuf, 0, outBufLen);
 
   if (inBufLen == 0U) {
-    return ERR_CRC;
+    return ST_ERR_CRC;
   }
 
   for (; mp < ((inBufLen * 8U) - 2U); mp += 2U) {
@@ -299,13 +299,13 @@ ReturnCode RfalRfST25R3916Class::iso15693VICCDecode(const uint8_t *inBuf,
     }
     if (((0U == man) || (3U == man)) && !isEOF) {
       if (bp >= ignoreBits) {
-        err = ERR_RF_COLLISION;
+        err = ST_ERR_RF_COLLISION;
       } else {
         /* ignored collision: leave as 0 */
         bp++;
       }
     }
-    if ((bp >= (outBufLen * 8U)) || (err == ERR_RF_COLLISION) || isEOF) {
+    if ((bp >= (outBufLen * 8U)) || (err == ST_ERR_RF_COLLISION) || isEOF) {
       /* Don't write beyond the end */
       break;
     }
@@ -314,12 +314,12 @@ ReturnCode RfalRfST25R3916Class::iso15693VICCDecode(const uint8_t *inBuf,
   *outBufPos = (bp / 8U);
   *bitsBeforeCol = bp;
 
-  if (err != ERR_NONE) {
+  if (err != ST_ERR_NONE) {
     return err;
   }
 
   if ((bp % 8U) != 0U) {
-    return ERR_CRC;
+    return ST_ERR_CRC;
   }
 
   if (*outBufPos > 2U) {
@@ -332,15 +332,15 @@ ReturnCode RfalRfST25R3916Class::iso15693VICCDecode(const uint8_t *inBuf,
 
     if (((crc & 0xffU) == outBuf[*outBufPos - 2U]) &&
         (((crc >> 8U) & 0xffU) == outBuf[*outBufPos - 1U])) {
-      err = ERR_NONE;
+      err = ST_ERR_NONE;
       ISO_15693_DEBUG("OK\n");
     } else {
       ISO_15693_DEBUG("error! Expected: 0x%x, got ", crc);
       ISO_15693_DEBUG("0x%hhx 0x%hhx\n", outBuf[*outBufPos - 2], outBuf[*outBufPos - 1]);
-      err = ERR_CRC;
+      err = ST_ERR_CRC;
     }
   } else {
-    err = ERR_CRC;
+    err = ST_ERR_CRC;
   }
 
   return err;
@@ -362,22 +362,22 @@ ReturnCode RfalRfST25R3916Class::iso15693VICCDecode(const uint8_t *inBuf,
  *  \param[in] buffer : data to send.
  *  \param[in] length : number of bytes to send.
  *
- *  \return ERR_IO : Error during communication.
- *  \return ERR_NONE : No error.
+ *  \return ST_ERR_IO : Error during communication.
+ *  \return ST_ERR_NONE : No error.
  *
  *****************************************************************************
  */
 ReturnCode iso15693PhyVCDCode1Of4(const uint8_t data, uint8_t *outbuffer, uint16_t maxOutBufLen, uint16_t *outBufLen)
 {
   uint8_t tmp;
-  ReturnCode err = ERR_NONE;
+  ReturnCode err = ST_ERR_NONE;
   uint16_t a;
   uint8_t *outbuf = outbuffer;
 
   *outBufLen = 0;
 
   if (maxOutBufLen < 4U) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   tmp = data;
@@ -418,22 +418,22 @@ ReturnCode iso15693PhyVCDCode1Of4(const uint8_t data, uint8_t *outbuffer, uint16
  *  \param[in] buffer : data to send.
  *  \param[in] length : number of bytes to send.
  *
- *  \return ERR_IO : Error during communication.
- *  \return ERR_NONE : No error.
+ *  \return ST_ERR_IO : Error during communication.
+ *  \return ST_ERR_NONE : No error.
  *
  *****************************************************************************
  */
 ReturnCode iso15693PhyVCDCode1Of256(const uint8_t data, uint8_t *outbuffer, uint16_t maxOutBufLen, uint16_t *outBufLen)
 {
   uint8_t tmp;
-  ReturnCode err = ERR_NONE;
+  ReturnCode err = ST_ERR_NONE;
   uint16_t a;
   uint8_t *outbuf = outbuffer;
 
   *outBufLen = 0;
 
   if (maxOutBufLen < 64U) {
-    return ERR_NOMEM;
+    return ST_ERR_NOMEM;
   }
 
   tmp = data;

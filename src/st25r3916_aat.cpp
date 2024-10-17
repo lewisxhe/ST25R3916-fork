@@ -105,7 +105,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916AatTune(const struct st25r3916AatTuneP
         || (tp->aat_b_start < tp->aat_b_min)
         || (tp->aat_b_start > tp->aat_b_max)
       )) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (NULL == tp) {
@@ -129,7 +129,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916AatTune(const struct st25r3916AatTuneP
 /*******************************************************************************/
 ReturnCode RfalRfST25R3916Class::aatHillClimb(const struct st25r3916AatTuneParams *tuningParams, struct st25r3916AatTuneResult *tuningStatus)
 {
-  ReturnCode  err = ERR_NONE;
+  ReturnCode  err = ST_ERR_NONE;
   uint32_t f_min;
   int32_t direction, gdirection;
   uint8_t amp, phs;
@@ -151,13 +151,13 @@ ReturnCode RfalRfST25R3916Class::aatHillClimb(const struct st25r3916AatTuneParam
       /* With the greedy step below always executed aftwards the -direction does never need to be investigated */
       direction = aatSteepestDescent(&f_min, &tp, tuningStatus, direction, -direction);
       if (tuningStatus->measureCnt > tp.measureLimit) {
-        err = ERR_OVERRUN;
+        err = ST_ERR_OVERRUN;
         break;
       }
       do {
         gdirection = aatGreedyDescent(&f_min, &tp, tuningStatus, direction);
         if (tuningStatus->measureCnt > tp.measureLimit) {
-          err = ERR_OVERRUN;
+          err = ST_ERR_OVERRUN;
           break;
         }
       } while (0 != gdirection);
@@ -271,7 +271,7 @@ ReturnCode RfalRfST25R3916Class::aatStepDacVals(const struct st25r3916AatTunePar
         aat_a = (int16_t)tuningParams->aat_a_max;
       }
       if ((int16_t)*a == aat_a) {
-        return ERR_PARAM;
+        return ST_ERR_PARAM;
       }
       break;
     case 2:
@@ -283,17 +283,17 @@ ReturnCode RfalRfST25R3916Class::aatStepDacVals(const struct st25r3916AatTunePar
         aat_b = (int16_t)tuningParams->aat_b_max;
       }
       if ((int16_t)*b == aat_b) {
-        return ERR_PARAM;
+        return ST_ERR_PARAM;
       }
       break;
     default:
-      return ERR_REQUEST;
+      return ST_ERR_REQUEST;
   }
   /* We only get here if actual values have changed. In all other cases an error is returned */
   *a = (uint8_t)aat_a;
   *b = (uint8_t)aat_b;
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 
 }
 
@@ -313,7 +313,7 @@ ReturnCode RfalRfST25R3916Class::aatMeasure(uint8_t serCap, uint8_t parCap, uint
 
   /* Get amplitude and phase .. */
   err = rfalChipMeasureAmplitude(amplitude);
-  if (ERR_NONE == err) {
+  if (ST_ERR_NONE == err) {
     err = rfalChipMeasurePhase(phase);
   }
 

@@ -131,7 +131,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadMultipleRegisters(uint8_t reg, uin
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -190,7 +190,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteMultipleRegisters(uint8_t reg, co
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -198,7 +198,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteMultipleRegisters(uint8_t reg, co
 ReturnCode RfalRfST25R3916Class::st25r3916WriteFifo(const uint8_t *values, uint16_t length)
 {
   if (length > ST25R3916_FIFO_DEPTH) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (length > 0U) {
@@ -236,7 +236,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteFifo(const uint8_t *values, uint1
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -275,7 +275,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadFifo(uint8_t *buf, uint16_t length
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -283,7 +283,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadFifo(uint8_t *buf, uint16_t length
 ReturnCode RfalRfST25R3916Class::st25r3916WritePTMem(const uint8_t *values, uint16_t length)
 {
   if (length > ST25R3916_PTM_LEN) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (length > 0U) {
@@ -321,7 +321,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMem(const uint8_t *values, uint
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -332,7 +332,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadPTMem(uint8_t *values, uint16_t le
 
   if (length > 0U) {
     if (length > ST25R3916_PTM_LEN) {
-      return ERR_PARAM;
+      return ST_ERR_PARAM;
     }
 
     bus_busy = true;
@@ -371,7 +371,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadPTMem(uint8_t *values, uint16_t le
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -379,7 +379,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadPTMem(uint8_t *values, uint16_t le
 ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemF(const uint8_t *values, uint16_t length)
 {
   if (length > (ST25R3916_PTM_F_LEN + ST25R3916_PTM_TSN_LEN)) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (length > 0U) {
@@ -417,7 +417,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemF(const uint8_t *values, uin
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -425,7 +425,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemF(const uint8_t *values, uin
 ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemTSN(const uint8_t *values, uint16_t length)
 {
   if (length > ST25R3916_PTM_TSN_LEN) {
-    return ERR_PARAM;
+    return ST_ERR_PARAM;
   }
 
   if (length > 0U) {
@@ -463,7 +463,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WritePTMemTSN(const uint8_t *values, u
     }
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -494,7 +494,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ExecuteCommand(uint8_t cmd)
     st25r3916Isr();
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -533,7 +533,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ReadTestRegister(uint8_t reg, uint8_t 
     st25r3916Isr();
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -574,7 +574,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916WriteTestRegister(uint8_t reg, uint8_t
     st25r3916Isr();
   }
 
-  return ERR_NONE;
+  return ST_ERR_NONE;
 }
 
 
@@ -589,7 +589,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ClrRegisterBits(uint8_t reg, uint8_t c
 
   /* Only perform a Write if value to be written is different */
   if (ST25R3916_OPTIMIZE && (rdVal == (uint8_t)(rdVal & ~clr_mask))) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   /* Write new reg value */
@@ -608,7 +608,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916SetRegisterBits(uint8_t reg, uint8_t s
 
   /* Only perform a Write if the value to be written is different */
   if (ST25R3916_OPTIMIZE && (rdVal == (rdVal | set_mask))) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   /* Write new reg value */
@@ -639,7 +639,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ModifyRegister(uint8_t reg, uint8_t cl
 
   /* Only perform a Write if the value to be written is different */
   if (ST25R3916_OPTIMIZE && (rdVal == wrVal)) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   /* Write new reg value */
@@ -663,7 +663,7 @@ ReturnCode RfalRfST25R3916Class::st25r3916ChangeTestRegisterBits(uint8_t reg, ui
 
   /* Only perform a Write if the value to be written is different */
   if (ST25R3916_OPTIMIZE && (rdVal == wrVal)) {
-    return ERR_NONE;
+    return ST_ERR_NONE;
   }
 
   /* Write new reg value */
